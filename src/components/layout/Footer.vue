@@ -28,7 +28,7 @@
             Saved
           </router-link>
           <a
-            href="https://github.com/hunghg255/hue-harmony"
+            href="https://github.com/AbdulghaniKM/hue-harmony"
             target="_blank"
             class="transition-colors hover:text-foreground"
           >
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Copyright -->
-        <p class="text-xs text-muted-foreground"> Built with ❤️ by hunghg255 </p>
+        <p class="text-xs text-muted-foreground"> Built with ❤️ by AbdulghaniKM </p>
       </div>
     </div>
   </footer>

@@ -17,43 +17,8 @@
     <div class="container relative py-8 md:py-16">
       <!-- Header -->
       <div class="mb-16 flex flex-col items-center text-center">
-        <div class="flex items-center gap-4">
-          <div class="inline-flex items-center gap-3 rounded-full bg-primary/5 px-4 py-1.5">
-            <Icon
-              icon="ph:palette-fill"
-              class="text-xl text-primary"
-            />
-            <span class="text-sm font-medium">Hue Harmony</span>
-          </div>
-          <router-link to="/saved">
-            <Button
-              variant="outline"
-              size="lg"
-              class="group relative overflow-hidden border-primary/20"
-            >
-              <span class="relative z-10 flex items-center gap-3">
-                <div class="flex items-center gap-2">
-                  <Icon
-                    icon="ph:book-bookmark"
-                    class="text-lg transition-transform group-hover:scale-110"
-                  />
-                  <span class="font-medium">Saved Palettes</span>
-                </div>
-                <Badge
-                  variant="secondary"
-                  class="bg-primary/10 text-primary"
-                >
-                  {{ paletteStore.savedPalettes.length }}
-                </Badge>
-              </span>
-              <div
-                class="absolute inset-0 -z-10 bg-primary/5 opacity-0 transition-opacity group-hover:opacity-100"
-              />
-            </Button>
-          </router-link>
-        </div>
         <h1
-          class="mt-6 bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl"
+          class="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl"
         >
           Create Your Color Harmony
         </h1>
@@ -139,75 +104,51 @@
 
         <!-- Color Display -->
         <Card class="overflow-hidden border-none bg-card/20 backdrop-blur-sm">
-          <div class="grid">
+          <div class="grid grid-cols-5">
             <template v-if="!paletteStore.isLoading">
               <div
                 v-for="(color, index) in paletteStore.currentPalette"
                 :key="index"
-                class="group relative"
+                class="group relative aspect-square cursor-pointer transition-all duration-300 hover:z-10 hover:scale-105"
                 :style="{
                   backgroundColor: getColorString(color),
-                  height: '120px',
                 }"
                 @click="copyColor(color)"
               >
+                <!-- Color Info Overlay -->
                 <div
-                  class="absolute inset-0 flex items-center justify-between px-6 opacity-0 transition-all group-hover:opacity-100"
+                  class="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:opacity-100"
                 >
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="rounded-md backdrop-blur-sm"
-                      :style="{
-                        backgroundColor: isLightColor(color)
-                          ? 'rgba(0,0,0,0.2)'
-                          : 'rgba(255,255,255,0.2)',
-                      }"
-                    >
-                      <Icon
-                        icon="ph:copy"
-                        :class="[isLightColor(color) ? 'text-black' : 'text-white']"
-                        class="m-1.5"
-                      />
-                    </div>
-                    <span
-                      class="font-mono text-sm"
-                      :class="[isLightColor(color) ? 'text-black' : 'text-white']"
-                    >
+                  <!-- Color Value -->
+                  <div
+                    class="flex items-center gap-2 rounded-md bg-white/90 px-3 py-1.5 text-black shadow-lg"
+                  >
+                    <Icon
+                      icon="ph:copy"
+                      class="text-sm"
+                    />
+                    <span class="font-mono text-sm">
                       {{ getFormattedColor(color) }}
                     </span>
                   </div>
+
+                  <!-- Adjust Buttons -->
                   <div class="flex gap-2">
                     <Button
                       @click.stop="adjustColor(index, 'lighter')"
                       variant="ghost"
                       size="sm"
-                      class="h-8 w-8 rounded-full p-0 backdrop-blur-sm"
-                      :style="{
-                        backgroundColor: isLightColor(color)
-                          ? 'rgba(0,0,0,0.1)'
-                          : 'rgba(255,255,255,0.1)',
-                      }"
+                      class="h-8 w-8 rounded-full bg-white/90 p-0 text-black shadow-lg"
                     >
-                      <Icon
-                        icon="ph:sun"
-                        :class="[isLightColor(color) ? 'text-black' : 'text-white']"
-                      />
+                      <Icon icon="ph:sun" />
                     </Button>
                     <Button
                       @click.stop="adjustColor(index, 'darker')"
                       variant="ghost"
                       size="sm"
-                      class="h-8 w-8 rounded-full p-0 backdrop-blur-sm"
-                      :style="{
-                        backgroundColor: isLightColor(color)
-                          ? 'rgba(0,0,0,0.1)'
-                          : 'rgba(255,255,255,0.1)',
-                      }"
+                      class="h-8 w-8 rounded-full bg-white/90 p-0 text-black shadow-lg"
                     >
-                      <Icon
-                        icon="ph:moon"
-                        :class="[isLightColor(color) ? 'text-black' : 'text-white']"
-                      />
+                      <Icon icon="ph:moon" />
                     </Button>
                   </div>
                 </div>
@@ -215,7 +156,7 @@
             </template>
             <div
               v-else
-              class="flex h-[600px] items-center justify-center"
+              class="col-span-5 flex h-[400px] items-center justify-center"
             >
               <div class="flex flex-col items-center gap-4">
                 <div class="animate-spin">
@@ -273,7 +214,12 @@
       paletteStore.currentPalette.length &&
       !paletteStore.isPaletteExists(paletteStore.currentPalette)
     ) {
-      paletteStore.savePalette(paletteStore.currentPalette);
+      // Add dialog to get palette name and favorite state
+      const paletteName = `Palette ${paletteStore.savedPalettes.length + 1}`;
+      paletteStore.savePalette(paletteStore.currentPalette, {
+        name: paletteName,
+        isFavorite: false, // Default to not favorite
+      });
       toastStore.addToast({
         description: 'Color story saved to your collection.',
       });
@@ -367,6 +313,7 @@
 
   function handleKeyPress(event) {
     if (event.key === ' ' && !paletteStore.isLoading) {
+      event.preventDefault(); // Prevent space from scrolling
       randomizePalette();
     } else if (event.key === 's' && !event.metaKey && !event.ctrlKey) {
       savePalette();
